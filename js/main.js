@@ -25,7 +25,32 @@ todoList.addEventListener("click", (e) => {
     doneTask(e);
     return;
   }
+
+  if (e.target.dataset.action === "edit") {
+    editTask(e);
+    return;
+  }
 });
+
+async function editTask(e) {
+  const parentNode = e.target.closest(".list-group-item");
+
+  const titleTask = parentNode.querySelector("#titleTask");
+  const editInputTask = parentNode.querySelector("#editInputTask");
+
+  titleTask.classList.toggle("none");
+  editInputTask.classList.toggle("none");
+
+  titleTask.innerHTML = editInputTask.value;
+
+  console.log(parentNode.dataset);
+
+  await api.updateTaskItem({
+    id: parentNode.dataset.id,
+    userId: 2,
+    title: editInputTask.value,
+  });
+}
 
 async function clearAll() {
   tasksList.innerHTML = "";
@@ -95,9 +120,14 @@ function taskItem(task) {
     ? "task-title task-title--done"
     : "task-title";
   return `
-		<li id="${task.id}" data-completed="${task.completed}" class="list-group-item d-flex justify-content-between task-item">
-			<span class="${cssClass}">${task.title}</span>
+		<li id="${task.id}" data-id="${task.id}" data-completed="${task.completed}" class="list-group-item d-flex justify-content-between task-item">
+			<span id="titleTask" class="${cssClass}">${task.title}</span>
+
+      <input id="editInputTask"  class="none" type="text" value="${task.title}" />
 			<div class="task-item__buttons">
+        <button type="button" data-action="edit" class="btn-action">
+					<img src="./img/leaf.svg" alt="Done" width="18" height="18">
+				</button>
 				<button type="button" data-action="done" class="btn-action">
 					<img src="./img/tick.svg" alt="Done" width="18" height="18">
 				</button>
