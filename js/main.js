@@ -1,6 +1,6 @@
 import api from "./api.js";
 
-const form = document.querySelector("#form");
+const todoList = document.querySelector("#todo-list");
 const taskInput = document.querySelector("#taskInput");
 const tasksList = document.querySelector("#tasksList");
 
@@ -8,23 +8,30 @@ api.fetchTodos().then((todos) => {
   renderTask(todos);
 });
 
-form.addEventListener("submit", addTask);
-
-tasksList.addEventListener("click", (event) => {
-  event.preventDefault();
-
-  if (event.target.dataset.action === "delete") {
-    deleteTask(event);
+todoList.addEventListener("click", (e) => {
+  if (e.target.dataset.action === "add-task") {
+    addTask(e);
     return;
   }
-  if (event.target.dataset.action === "done") {
-    doneTask(event);
+  if (e.target.dataset.action === "clear-all") {
+    clearAll(e);
+    return;
+  }
+  if (e.target.dataset.action === "delete") {
+    deleteTask(e);
+    return;
+  }
+  if (e.target.dataset.action === "done") {
+    doneTask(e);
     return;
   }
 });
 
+async function clearAll() {
+  tasksList.innerHTML = "";
+}
+
 async function addTask(event) {
-  event.preventDefault();
   const taskText = taskInput.value;
 
   const newTask = {
