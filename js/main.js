@@ -77,7 +77,7 @@ function clearAll() {
   tasksList.innerHTML = "";
 }
 
-async function doneTask(event) {
+function doneTask(event) {
   const parentNode = event.target.closest(".list-group-item");
 
   const id = Number(parentNode.id);
@@ -88,7 +88,7 @@ async function doneTask(event) {
   const completed = parentNode.dataset.completed === "true";
   parentNode.dataset.completed = completed;
 
-  await api.updateTaskItem({
+api.updateTaskItem({
     id,
     userId: 2,
     completed: !completed,
