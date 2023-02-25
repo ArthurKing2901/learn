@@ -4,7 +4,7 @@ const taskInput = document.querySelector("#taskInput");
 const tasksList = document.querySelector("#tasksList");
 
 
-const tasks = api.fetchTodos()
+const tasks = api.fetchTasks()
  renderTask(tasks);
 
 document.body.addEventListener("click", (e) => {
@@ -65,18 +65,6 @@ function editTask(e) {
   });
 }
 
-function deleteTask(event) {
-  const parentNode = event.target.closest(".list-group-item");
-  const id = Number(parentNode.id);
-
-  parentNode.remove();
-	api.deleteTask(id);
-}
-
-function clearAll() {
-  tasksList.innerHTML = "";
-}
-
 function doneTask(event) {
   const parentNode = event.target.closest(".list-group-item");
 
@@ -95,19 +83,16 @@ api.updateTaskItem({
   });
 }
 
-function renderTask(tasks = []) {
-  if (tasks.length === 0) {
-    const emptyListHTML = `
-		<li id="emptyList" class="list-group-item empty-list">
-			<img src="./img/leaf.svg" alt="Empty" width="48" class="mt-3">
-			<div class="empty-list__title">Список дел пуст</div>
-		</li>`;
-    tasksList.insertAdjacentHTML("afterbegin", emptyListHTML);
-  }
+function deleteTask(event) {
+  const parentNode = event.target.closest(".list-group-item");
+  const id = Number(parentNode.id);
 
-  const tasksHTML = tasks.map((task) => taskItem(task));
+  parentNode.remove();
+	api.deleteTask(id);
+}
 
-  tasksList.insertAdjacentHTML("beforeend", tasksHTML.join(""));
+function clearAll() {
+  tasksList.innerHTML = "";
 }
 
 function taskItem(task) {
@@ -131,4 +116,19 @@ function taskItem(task) {
 				</button>
 			</div>
 		</li>`;
+}
+
+function renderTask(tasks = []) {
+  if (tasks.length === 0) {
+    const emptyListHTML = `
+		<li id="emptyList" class="list-group-item empty-list">
+			<img src="./img/leaf.svg" alt="Empty" width="48" class="mt-3">
+			<div class="empty-list__title">Список дел пуст</div>
+		</li>`;
+    tasksList.insertAdjacentHTML("afterbegin", emptyListHTML);
+  }
+
+  const tasksHTML = tasks.map((task) => taskItem(task));
+
+  tasksList.insertAdjacentHTML("beforeend", tasksHTML.join(""));
 }
