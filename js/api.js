@@ -1,47 +1,29 @@
-async function fetchTodos() {
+function fetchTodos() {
   // Получение данных от сервера
-  const res = await fetch(
-    "https://jsonplaceholder.typicode.com/todos?_limit=5"
-  );
-  const jsonTodos = await res.json();
-  return jsonTodos;
+  const tasks = JSON.parse(localStorage.getItem('tasks') || "[]");
+	return tasks;
 }
 
-async function deleteTask(taskId) {
-  // Удаление данных НА сервере
-  await fetch(`https://jsonplaceholder.typicode.com/todos/${taskId}`, {
-    method: "DELETE",
-  });
+function deleteTask(taskId) {
+	let tasks = JSON.parse(localStorage.getItem('tasks'));
+	tasks = tasks.filter((task) => task.id !== taskId);
+	localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-async function addTaskItem(newTask) {
-  // Добавление данных НА сервер
-  const response = await fetch("https://jsonplaceholder.typicode.com/todos", {
-    method: "POST",
-    body: JSON.stringify(newTask),
-    headers: {
-      "Content-type": "application/json; charset=UTF-8",
-    },
-  });
-  const jsonNewTask = await response.json();
-  return jsonNewTask;
-}
+ function addTaskItem(newTask) {
+	let tasks = JSON.parse(localStorage.getItem('tasks') || "[]");
+	tasks.push(newTask);
+	localStorage.setItem('tasks', JSON.stringify(tasks));
+		}
 
-async function updateTaskItem(updateTask) {
-  // сказать серверу обновить данные
-  const response = await fetch(
-    `https://jsonplaceholder.typicode.com/todos/${updateTask.id}`,
-    {
-      method: "PUT",
-      body: JSON.stringify(updateTask),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    }
-  );
-  const jsonUpdateTask = await response.json();
-  return jsonUpdateTask;
-}
+ function updateTaskItem(updateTask) {
+	let tasks = JSON.parse(localStorage.getItem('tasks') || "[]");
+	const indexUpdateTask = tasks.findIndex((task) => task.id === updateTask.id);
+	tasks[indexUpdateTask].title = updateTask.title;
+	localStorage.setItem('tasks', JSON.stringify(tasks));
+	}
+
+
 
 export default {
   fetchTodos,

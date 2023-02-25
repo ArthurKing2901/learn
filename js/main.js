@@ -1,14 +1,13 @@
 import api from "./api.js";
 
-const todoList = document.querySelector("#todo-list");
 const taskInput = document.querySelector("#taskInput");
 const tasksList = document.querySelector("#tasksList");
 
-api.fetchTodos().then((todos) => {
-  renderTask(todos);
-});
 
-todoList.addEventListener("click", (e) => {
+const tasks = api.fetchTodos()
+ renderTask(tasks);
+
+document.body.addEventListener("click", (e) => {
   if (e.target.dataset.action === "add-task") {
     addTask(e);
     return;
@@ -25,14 +24,31 @@ todoList.addEventListener("click", (e) => {
     doneTask(e);
     return;
   }
-
   if (e.target.dataset.action === "edit") {
     editTask(e);
     return;
   }
 });
 
-async function editTask(e) {
+function addTask(event) {
+  const taskText = taskInput.value;
+
+  const newTask = {
+		id: Date.now(),
+		title: taskText,
+		completed: false,
+  }
+
+  taskInput.value = "";
+  taskInput.focus();
+
+  const newTaskHtml = taskItem(newTask);
+  tasksList.insertAdjacentHTML("beforeend", newTaskHtml);
+
+ api.addTaskItem(newTask);
+}
+
+function editTask(e) {
   const parentNode = e.target.closest(".list-group-item");
 
   const titleTask = parentNode.querySelector("#titleTask");
@@ -43,43 +59,22 @@ async function editTask(e) {
 
   titleTask.innerHTML = editInputTask.value;
 
-  console.log(parentNode.dataset);
-
-  await api.updateTaskItem({
-    id: parentNode.dataset.id,
-    userId: 2,
-    title: editInputTask.value,
+ 	api.updateTaskItem({
+    id: Number(parentNode.dataset.id),
+     title: editInputTask.value,
   });
 }
 
-async function clearAll() {
-  tasksList.innerHTML = "";
-}
-
-async function addTask(event) {
-  const taskText = taskInput.value;
-
-  const newTask = {
-    userId: 2,
-    title: taskText,
-    completed: false,
-  };
-
-  taskInput.value = "";
-  taskInput.focus();
-
-  const newTaskHtml = taskItem(newTask);
-  tasksList.insertAdjacentHTML("beforeend", newTaskHtml);
-
-  await api.addTaskItem(newTask);
-}
-
-async function deleteTask(event) {
+function deleteTask(event) {
   const parentNode = event.target.closest(".list-group-item");
   const id = Number(parentNode.id);
 
   parentNode.remove();
-  await api.deleteTask(id);
+	api.deleteTask(id);
+}
+
+function clearAll() {
+  tasksList.innerHTML = "";
 }
 
 async function doneTask(event) {
